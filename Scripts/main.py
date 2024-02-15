@@ -58,6 +58,10 @@ class Link:
     href = ''
     users = []
 
+    def __init__(self, link, users):
+        self.href = link
+        self.users = users
+
 
 def keygen():
     chars = string.ascii_letters + string.digits
@@ -611,13 +615,13 @@ async def set_bad_inteval(message: types.Message, state: FSMContext):
 ########################################################################################################################
 proxyNumber = 0
 
-
 def linkcount():
     number= 0
     for user in Users:
         for link in user.links:
             number += 1
     return number
+
 
 def userdelay():
     delay = []
@@ -644,15 +648,17 @@ def main_parsing():
         if time.time() - timer >= t:
             t = random.uniform(T-5, T+5)
             print(f"t = {t}")
-            timer = time.time()
             delay = userdelay()
             linkc = linkcount()
             if linkc != 0:
                 firstparse = False
                 for user in range(len(Users)):
-                    userThread = Thread(target=user_parse, args=(Users[user], t, linkc, ))
-                    userThread.start()
-                    time.sleep(t/linkc*delay[user])
+                    Users[user].lifetime -= time.time() - timer
+                    if Users[user].lifetime > 0:
+                        userThread = Thread(target=user_parse, args=(Users[user], t, linkc, ))
+                        userThread.start()
+                        time.sleep(t/linkc*delay[user])
+            timer = time.time()
 
         if time.time() - timer >= C:
             timer = time.time()
