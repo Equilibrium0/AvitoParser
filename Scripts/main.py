@@ -32,6 +32,7 @@ class User:
     linksNames = []
     linkLimit = 1
     lifetime = 2592000
+    lifetimeWarning = True
 
     def __init__(self, user_id, user_role="User", user_links=[], user_lp=[], user_lk=[], user_linkslim=1, user_life=259200):
         self.ID = user_id
@@ -57,10 +58,12 @@ class User:
 class Link:
     href = ''
     users = []
+    usersLinkID = []
 
-    def __init__(self, link, users):
+    def __init__(self, link, users, ID):
         self.href = link
         self.users = users
+        self.id = ID
 
 
 def keygen():
@@ -635,52 +638,52 @@ with open('users.json', 'r') as f:
     for proxy in data["Proxies"]:
         proxyList.append(proxy)
 
-firstparse = True
+
 T = 30.0
 C = 1200.0
 
 
 def main_parsing():
-    global firstparse
     t = 30.0
     timer = 0
     while True:
         if time.time() - timer >= t:
             t = random.uniform(T-5, T+5)
             print(f"t = {t}")
-            delay = userdelay()
-            linkc = linkcount()
-            if linkc != 0:
-                firstparse = False
-                for user in range(len(Users)):
-                    Users[user].lifetime -= time.time() - timer
-                    if Users[user].lifetime > 0:
-                        userThread = Thread(target=user_parse, args=(Users[user], t, linkc, ))
-                        userThread.start()
-                        time.sleep(t/linkc*delay[user])
+            linkPool = []
+            for user in Users:
+                if user.lifetime > 0:
+                    user.lifetime -= time.time()-timer
+                    for link in range(len(user.links)):
+                        newlink = True
+                        for i in linkPool:
+                            if user.links[link] == i.href:
+                                i.users.append(user.ID)
+                                i.usersLinkID.append(link)
+                                newlink = False
+                        if newlink:
+                            new = Link(user.links[link], [], [])
+                            new.users.append(user.ID)
+                            new.usersLinkID.append(link)
+                            linkPool.append(new)
+                else:
+                    print("Out of time")
+
+            delay = t/len(linkPool)
             timer = time.time()
-
-        if time.time() - timer >= C:
-            timer = time.time()
-            for proxy in badProxy:
-                proxyList.append(proxy)
-
-
-def user_parse(user: User, t, linkc):
-    userIndex = FindUser(user.ID)
-    for linkID in range(len(user.links)):
-        linkThread = Thread(target=link_betwen, args=(user.links[linkID], linkID, userIndex, ))
-        linkThread.start()
-        time.sleep(t/linkc)
+            for linkfrompool in linkPool:
+                parse = Thread(target=link_betwen, args=(linkfrompool, ))
+                parse.start()
+                time.sleep(delay)
 
 
-def link_betwen(link, id, userIndex):
+def link_betwen(linkfrompool):
     newloop = asyncio.new_event_loop()
     asyncio.set_event_loop(newloop)
-    asyncio.run(link_parse(link, id, userIndex))
+    asyncio.run(link_parse(linkfrompool))
 
 
-async def link_parse(link, id, userIndex):
+async def link_parse(linkfrompool):
     global proxyNumber
     try:
         try:
@@ -710,7 +713,7 @@ async def link_parse(link, id, userIndex):
                                                                 'durable_storage': 2}}
             edge_options.add_experimental_option('prefs', prefs)
             drive = webdriver.Edge(options=edge_options, seleniumwire_options=proxopt)
-            drive.get(link)
+            drive.get(linkfrompool.href)
 
             if "Доступ ограничен: проблема с IP" in drive.page_source:
                 print("Bad proxy")
@@ -733,24 +736,28 @@ async def link_parse(link, id, userIndex):
         lastItem = 40
 
         for link in range(len(links)):
-            if links[link] in Users[userIndex].lastParse[id]:
+            if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.id]:
                 lastItem = link
                 break
 
         print(lastItem)
-        print(Users[userIndex].lastParse[id])
-        if Users[userIndex].lastParse[id] != []:
+        print(Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.id])
+
+        if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.id] != []:
             for i in range(lastItem):
                 fulllink = "https://www.avito.ru" + links[i]
                 price = items[i].find('meta', {'itemprop': 'price'}).get('content')
                 title = items[i].find('a').get('title')[11:len(items[i].find('a').get('title'))-13]
-                message = (f"Новое объявление по запросу {Users[userIndex].linksNames[id]}\n\n"
-                           f"{title}\n\n"
-                           f"Цена: {price} руб\n\n"
-                           f" {fulllink}")
-                asyncio.run_coroutine_threadsafe(bot.send_message(chat_id=Users[userIndex].ID, text=message), teleloop)
 
-        Users[userIndex].lastParse[id] = links
+                for user in range(len(linkfrompool.users)):
+                    message = (f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
+                               f"{title}\n\n"
+                               f"Цена: {price} руб\n\n"
+                               f" {fulllink}")
+                    asyncio.run_coroutine_threadsafe(bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
+
+        Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] = links
+
     except Exception as e:
         print("Removal Error")
 
