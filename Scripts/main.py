@@ -687,6 +687,10 @@ async def link_parse(linkfrompool):
     global proxyNumber
     try:
         try:
+            if len(proxyList) == 0:
+                print("out of proxies")
+                return
+
             edge_options = Options()
             proxopt = {
                 'proxy': {
