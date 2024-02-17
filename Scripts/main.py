@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import json
 import random
 import string
@@ -127,7 +128,7 @@ startButtonLine1 = ["Добавить ссылку", "Удалить ссылк�
 startButtonLine2 = ["Ввести код", "Статус аккаунта"]
 startButtonAdminLine2 = ["Добавить прокси", "Удалить прокси"]
 startButtonAdminLine3 = ["Задать интервал парсинга", "Задать интервал отдыха"]
-startButtonAdminLine4 = ["Статус системы", "Сгенерировать код"]
+startButtonAdminLine4 = ["Статус системы", "Сгенерировать код", "Экстренная остановка"]
 startButtonAdminLine5 = "Статус аккаунта"
 generateCodeButton = ["Суперпользователь", "Администратор"]
 cancelButton = "Отмена"
@@ -227,6 +228,7 @@ async def acc_info(message: types.Message):
         case other: linklm = -1
 
     await message.answer(f"Статус аккаунта:\n"
+                         f" ID: {Users[userIndex].ID}"
                          f" Роль: {Users[userIndex].role}\n"
                          f" Лимит ссылок: {linklm}\n"
                          f" Свободных слотов для ссылок: {Users[userIndex].linkLimit}\n"
@@ -612,6 +614,58 @@ async def set_bad_inteval(message: types.Message, state: FSMContext):
         return
 
 
+######################Add linklimit########################
+
+class AddLinkLimit(StatesGroup):
+    userID = State()
+    linkNumber = State()
+
+
+@dp.message_handler(lambda message: message.text == "Увеличить лимит ссылок")
+async def add_linklimit(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+    if Users[userIndex].role != "Admin":
+        await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        return
+    else:
+        await message.answer("Введите ID пользователя", reply_markup=cancelkeyboard)
+        await state.set_state(AddLinkLimit.userID.state)
+
+@dp.message_handler(state=AddLinkLimit.userID)
+async def linklimit_user(message: types.Message, state: FSMContext):
+    try:
+        userIndex = FindUser(message.text)
+        await state.update_data(index=userIndex)
+        await message.answer("Сколько слотов добавить?", reply_markup=cancelkeyboard)
+        await state.set_state(AddLinkLimit.linkNumber.state)
+    except Exception as e:
+        await message.answer("Пользователь не найден", reply_markup=cancelkeyboard)
+
+
+@dp.message_handler(state=AddLinkLimit.linkNumber)
+async def linklimit_finale(message: types.Message, state: FSMContext):
+    data =  await state.get_data()
+    userIndex = data['id']
+    try:
+        Users[userIndex].linkLimit += int(message.text)
+        await message.answer("Лимит пользователя был увеличен", reply_markup=adminKeyboard)
+    except Exception as e:
+        await message.answer("Ошибка", reply_markup=cancelkeyboard)
+        return
+
+
+
+
+######################Emergency Exit#######################
+@dp.message_handler(lambda message: message.text == "Экстренная остановка")
+async def emergency_stop(message: types.Message):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+    if Users[userIndex].role != "Admin":
+        await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+    else:
+        sys.exit(1)
 
 ########################################################################################################################
 ########################################################Parsing Module##################################################
@@ -759,8 +813,7 @@ async def link_parse(linkfrompool):
                                f"Цена: {price} руб\n\n"
                                f" {fulllink}")
                     asyncio.run_coroutine_threadsafe(bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
-
-        Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] = links
+                    Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[linkfrompool.usersLinkID[user]]] = links
 
     except Exception as e:
         print("Removal Error")
