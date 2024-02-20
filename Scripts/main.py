@@ -3,6 +3,7 @@ import sys
 import json
 import random
 import string
+import logging
 from bs4 import BeautifulSoup
 from threading import Thread
 import time
@@ -18,6 +19,16 @@ proxyList = []
 badProxy = []
 teleloop = asyncio.new_event_loop()
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler('BotLogs.txt')
+file_handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s  %(levelname)s  %(message)s')
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 ########################################################################################################################
 ##########################################################User Module###################################################
@@ -108,6 +119,8 @@ with open('users.json', 'r') as f:
         Users.append(User(user.get("id"), user.get("role"), user.get("links"), user.get("lastParse"),
                           user.get("linksName"), user.get("linkLimit"), user.get("lifetime")))
 
+logger.info(f"INITIALIZATION... USER LOADED: {len(Users)}")
+
 for user in Users:
     for link in user.links:
         user.linkLimit -=1
@@ -127,7 +140,7 @@ dp = Dispatcher(bot=bot, storage=storage)
 startButtonLine1 = ["Добавить ссылку", "Удалить ссылку"]
 startButtonLine2 = ["Ввести код", "Статус аккаунта"]
 startButtonAdminLine2 = ["Добавить прокси", "Удалить прокси"]
-startButtonAdminLine3 = ["Задать интервал парсинга", "Задать интервал отдыха"]
+startButtonAdminLine3 = ["Задать интервал парсинга", "Задать интервал отдыха", "Логи"]
 startButtonAdminLine4 = ["Статус системы", "Сгенерировать код", "Экстренная остановка"]
 startButtonAdminLine5 = "Статус аккаунта"
 generateCodeButton = ["Суперпользователь", "Администратор"]
@@ -170,14 +183,16 @@ def TelegramModule():
 @dp.message_handler(commands=['start'])
 async def start_handler(message: types.Message):
     userID = message.from_user.id
-    ak = adminKeyboard
+    logger.info(f"MESSAGE USER: {userID}, COMMAND: Start")
     if FindUser(userID) != 'null':
         if Users[FindUser(userID)].role == "Admin":
             await message.answer(f"Добро пожаловать обратно! \n"
-                                 f"Чем я могу вам помочь?", reply_markup=ak)
+                                 f"Чем я могу вам помочь?", reply_markup=adminKeyboard)
+            logger.info(f"ANSWER USER: {userID}, COMMAND: Start, NEW: Old User, ROLE: Admin")
         else:
             await message.answer(f"Добро пожаловать обратно! \n"
                                  f"Чем я могу вам помочь?", reply_markup=startKeyboard)
+            logger.info(f"ANSWER USER: {userID}, COMMAND: Start, NEW: Old User, ROLE: User")
     else:
 
         NewUser = User(userID)
@@ -195,6 +210,7 @@ async def start_handler(message: types.Message):
                              "а срок действия аккаунта ограничен 1 неделей")
         await message.answer("Для улучшения аккаунта вы можете ввести код, полученный от администратора",
                              reply_markup=startKeyboard)
+        logger.info(f"ANSWER USER: {userID}, COMMAND: Start, NEW: New User, ROLE: User")
 
 
 @dp.message_handler(commands='cancel', state='*')
@@ -202,6 +218,7 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     await state.finish()
     await message.answer("Операция отменена", reply_markup=chooseStartkeyboard(userID))
+    logger.info(f"MESSAGE USER: {userID}, COMMAND: Cancel")
 
 
 @dp.message_handler(lambda message: message.text == "Отмена", state='*')
@@ -209,6 +226,7 @@ async def msg_cancel(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     await state.finish()
     await message.answer("Операция отменена", reply_markup=chooseStartkeyboard(userID))
+    logger.info(f"MESSAGE USER: {userID}, COMMAND: Cancel")
 
 
 ######################Account Info#########################
@@ -217,6 +235,7 @@ async def msg_cancel(message: types.Message, state: FSMContext):
 async def acc_info(message: types.Message):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+    logger.info(f"MESSAGE USER: {userID}, COMMAND: ACCOUT STATUS")
     links = ""
     for i in range(len(Users[userIndex].links)):
         links += (f"{Users[userIndex].linksNames[i]}\n"
@@ -247,32 +266,42 @@ class AddLink(StatesGroup):
 async def link_start(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: New Link, STAGE: 1")
     if Users[userIndex].linkLimit > 0:
         await message.answer("Введите ссылку", reply_markup=cancelkeyboard)
         await state.set_state(AddLink.waiting_for_link.state)
+        logger.info(f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: New Link, STAGE: 1, CONTENT: Await link")
     else:
         await message.answer("Вы исчерпали лимит ссылок", reply_markup=chooseStartkeyboard(userID))
+        logger.info(f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: New Link, STAGE: 1, CONTENT: Out of links")
         return
 
 
 @dp.message_handler(state=AddLink.waiting_for_link)
 async def link_name(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    index = FindUser(userID)
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 2")
+
     if (("https://www.avito.ru/" not in message.text) and
             ("https://avito.ru/" not in message.text) and
             ("https://m.avito.ru/" not in message.text)):
         await message.answer("Это не ссылка на Авито\nВведите корректную ссылку", reply_markup=cancelkeyboard)
+        logger.info(f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 2, CONTENT: Bad link")
+
         return
 
-    userID = message.from_user.id
-    index = FindUser(userID)
+
     for link in Users[index].links:
         if link == message.text:
             await message.answer("Данная ссылка уже добавлена", reply_markup=cancelkeyboard)
+            logger.info(f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 2, CONTENT: Link Exist")
             return
 
     await state.update_data(newLink=message.text)
     await state.set_state(AddLink.waiting_for_name.state)
     await message.answer("Выберите название для ссылки\n(Оно будет использоваться в уведомлениях)", reply_markup=cancelkeyboard)
+    logger.info(f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 2, CONTENT: Await name")
 
 
 @dp.message_handler(state=AddLink.waiting_for_name)
@@ -281,10 +310,12 @@ async def link_final(message: types.Message, state: FSMContext):
     linkData = await state.get_data()
     userID = message.from_user.id
     index = FindUser(userID)
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 3")
 
     for link in Users[index].linksNames:
         if link == message.text:
             await message.answer("Данное название уже используется", reply_markup=cancelkeyboard)
+            logger.info(f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 3, CONTENT: Name Exist")
             return
 
     Users[index].links.append(linkData['newLink'])
@@ -302,6 +333,7 @@ async def link_final(message: types.Message, state: FSMContext):
     await message.answer("Ссылка добавлена", reply_markup=chooseStartkeyboard(userID))
     Users[index].linkLimit -= 1
     await state.finish()
+    logger.info(f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 3, CONTENT: Link Added")
 
 
 ######################Delete Link##########################
@@ -315,15 +347,20 @@ async def remove_link(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     keyboard = types.InlineKeyboardMarkup()
     index = FindUser(userID)
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: Delete Link, STAGE: 1")
     await state.update_data(id=index)
     if len(Users[index].links) == 0:
         await message.answer("На данный момент у вас нет ссылок", reply_markup=chooseStartkeyboard(userID))
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Delete Link, STAGE: 1, CONTENT: No Links")
         return
     else:
         for i in range(len(Users[index].links)):
             keyboard.add(types.InlineKeyboardButton(text=f"{Users[index].linksNames[i]}", callback_data=f"{i}"))
         await state.set_state(RemoveLink.choose_link.state)
         await message.answer("Какую ссылку удалить?(используйте /cancel для отмены)\n", reply_markup=keyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Delete Link, STAGE: 1, CONTENT: Await Link Index")
 
 
 @dp.callback_query_handler(state=RemoveLink.choose_link)
@@ -331,6 +368,9 @@ async def delete_link(call: types.CallbackQuery, state: FSMContext):
     userID = call.from_user.id
     data = await state.get_data()
     index = data['id']
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: Delete Link, STAGE: 2")
+
     Users[index].links.remove(Users[index].links[int(call.data)])
     Users[index].linksNames.remove(Users[index].linksNames[int(call.data)])
     Users[index].lastParse.remove(Users[index].lastParse[int(call.data)])
@@ -346,7 +386,8 @@ async def delete_link(call: types.CallbackQuery, state: FSMContext):
     await call.answer()
     Users[index].linkLimit += 1
     await call.message.answer("Ссылка удалена", reply_markup=chooseStartkeyboard(userID))
-
+    logger.info(
+        f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Delete Link, STAGE: 2, CONTENT: Link Deleted")
 
 #######################Account Upgrade#####################
 
@@ -356,14 +397,22 @@ class AccUpg(StatesGroup):
 
 @dp.message_handler(lambda message: message.text == "Ввести код")
 async def upgrade(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    index = FindUser(userID)
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: Acc Upgrade, STAGE: 1")
     await message.answer("Введите код, полученный от администратора", reply_markup=cancelkeyboard)
     await state.set_state(AccUpg.code.state)
+    logger.info(
+        f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Acc Upgrade, STAGE: 1, CONTENT: Await Code")
 
 
 @dp.message_handler(state=AccUpg.code)
 async def confirm(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     index = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: Acc Upgrade, STAGE: 2")
+
     super = False
     admin = False
 
@@ -386,6 +435,8 @@ async def confirm(message: types.Message, state: FSMContext):
         data["Users"][index]["linkLimit"] = 1000
         Users[index].lifetime = 999999999
         data["Users"][index]["lifetime"] = 999999999
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Acc Upgrade, STAGE: 2, CONTENT: Up To Admin")
     elif super:
         Users[index].role = "SuperUser"
         data["Users"][index]["role"] = "SuperUser"
@@ -395,8 +446,12 @@ async def confirm(message: types.Message, state: FSMContext):
         data["Users"][index]["linkLimit"] = 10
         Users[index].lifetime = 999999999
         data["Users"][index]["lifetime"] = 999999999
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Acc Upgrade, STAGE: 2, CONTENT: Up To Super")
     else:
         await message.answer("Неверный код", reply_markup=cancelkeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Acc Upgrade, STAGE: 2, CONTENT: Invalid Code")
         return
     with open('users.json', 'w') as f:
         json.dump(data, f)
@@ -413,18 +468,31 @@ class NewProxy(StatesGroup):
 @dp.message_handler(lambda message: message.text == "Добавить прокси")
 async def proxy_add(message: types.Message, state: FSMContext):
     userID = message.from_user.id
+    index = FindUser(userID)
     userRole = Users[FindUser(userID)].role
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: Add Proxy, STAGE: 1")
+
     if userRole != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Add Proxy, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         await message.answer("Введите прокси в следующем формате:\n"
                              "<Протокол>://<Имя пользователя>:<Пароль>@<IP>:<Порт>", reply_markup=cancelkeyboard)
         await state.set_state(NewProxy.proxy_await.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Add Proxy, STAGE: 1, CONTENT: Await Proxy")
 
 
 @dp.message_handler(state=NewProxy.proxy_await)
 async def proxy_check(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    index = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[index].role}, COMMAND: Add Proxy, STAGE: 2")
+
     proxyopt={
         'proxy': {
             'http': f'{message.text}',
@@ -439,9 +507,13 @@ async def proxy_check(message: types.Message, state: FSMContext):
         proxyList.append(message.text)
         proxyList.append(message.text)
         await message.answer("Прокси добавлены", reply_markup=adminKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Add Proxy, STAGE: 2, CONTENT: Proxy Added")
     except Exception as e:
         print(e)
         await message.answer("Произошла ошибка\nПрокси не добавелны", reply_markup=cancelkeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: Add Proxy, STAGE: 2, CONTENT: Proxy Not Added")
 
     with open('users.json', 'r') as f:
         data = json.load(f)
@@ -460,8 +532,13 @@ class DeleteProxy(StatesGroup):
 async def delete_proxy(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Delete Proxy, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Delete Proxy, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         chooseKeyboard = types.InlineKeyboardMarkup()
@@ -469,10 +546,17 @@ async def delete_proxy(message: types.Message, state: FSMContext):
             chooseKeyboard.add(types.InlineKeyboardButton(text=f"{proxyList[i]}", callback_data=f"{i}"))
         await message.answer("Какие прокси удалить?\n(используйте /cancel для отмены)", reply_markup=chooseKeyboard)
         await state.set_state(DeleteProxy.choose_proxy.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Delete Proxy, STAGE: 1, CONTENT: Await Proxy Index")
 
 
 @dp.callback_query_handler(state=DeleteProxy.choose_proxy)
 async def delete_link(call: types.CallbackQuery, state: FSMContext):
+    userID = call.from_user.id
+    userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Delete Proxy, STAGE: 2")
+
     proxyList.remove(proxyList[int(call.data)])
     with open('users.json', 'r') as f:
         data = json.load(f)
@@ -482,6 +566,8 @@ async def delete_link(call: types.CallbackQuery, state: FSMContext):
     await call.answer()
     await call.message.answer("Прокси удалены", reply_markup=adminKeyboard)
     await state.finish()
+    logger.info(
+        f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Delete Proxy, STAGE: 2, CONTENT: Proxy Deleted")
 
 
 
@@ -495,28 +581,46 @@ class CodeGen(StatesGroup):
 async def generate_code(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Недостаточно прав для выполнения операции", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         await message.answer("Для какой роли сгенерировать код?\n(используйте /cancel для отмены)", reply_markup=generateCodeKeyboard)
         await state.set_state(CodeGen.choose_role.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 1, CONTENT: Await Role")
 
 
 @dp.message_handler(state=CodeGen.choose_role)
 async def role_choosen(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 2")
+
     if message.text == "Суперпользователь":
         key = newkey("SuperUser")
         await message.answer("Код сгенерирован. Передайте его пользователю\n"
                              f"{key}", reply_markup=adminKeyboard)
         await state.finish()
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 2, CONTENT: Super Generated")
     elif message.text == "Администратор":
         key = newkey("Admin")
         await message.answer("Код сгенерирован. Передайте его пользователю\n"
                              f"{key}", reply_markup=adminKeyboard)
         await state.finish()
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 2, CONTENT: Admin Generated")
     else:
         await message.answer("Некоректная роль", reply_markup=generateCodeKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Generate Code, STAGE: 2, CONTENT: Invalid Role")
         return
 
 
@@ -526,8 +630,13 @@ async def role_choosen(message: types.Message, state: FSMContext):
 async def system_status(message: types.Message):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: System Status, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: System Status, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         linkCount = 0
@@ -551,6 +660,8 @@ async def system_status(message: types.Message):
                              f"{bad}\n"
                              f"Интервал парсинга: {T} сек\n"
                              f"Время отдыха нерабочих прокси: {C} сек", reply_markup=adminKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: System Status, STAGE: 1, CONTENT: Status Shown")
 
 
 ########################Set Parsing########################
@@ -562,24 +673,40 @@ class SetInteval(StatesGroup):
 async def set_parsing(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         await message.answer("Введите интервал в секундах", reply_markup=cancelkeyboard)
         await state.set_state(SetInteval.interval.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 1, CONTENT: Await interval")
 
 
 @dp.message_handler(state=SetInteval.interval)
 async def set_inteval(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 2")
+
     try:
         global T
         interval = float(message.text)
         T = interval
         await message.answer("Интервал установлен", reply_markup=adminKeyboard)
         await state.finish()
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 2, CONTENT: Interval Setted")
     except Exception as e:
         await message.answer("Интервал не установлен", reply_markup=cancelkeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 2, CONTENT: Interval Not Setted")
         return
 
 
@@ -593,24 +720,40 @@ class SetBadInterval(StatesGroup):
 async def set_cooldown(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Bad Proxy, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Bad Proxy, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         await message.answer("Введите интервал в секундах", reply_markup=cancelkeyboard)
         await state.set_state(SetBadInterval.interval.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Bad Proxy, STAGE: 1, CONTENT: Await Interval")
 
 
 @dp.message_handler(state=SetBadInterval.interval)
 async def set_bad_inteval(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Bad Proxy, STAGE: 2")
+
     try:
         global C
         interval = float(message.text)
         C = interval
         await message.answer("Интервал установлен", reply_markup=adminKeyboard)
         await state.finish()
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Bad Proxy, STAGE: 2, CONTENT: Interval Setted")
     except Exception as e:
         await message.answer("Интервал не установлен", reply_markup=cancelkeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Set Parsing, STAGE: 2, CONTENT: Interval Not Setted")
         return
 
 
@@ -625,33 +768,59 @@ class AddLinkLimit(StatesGroup):
 async def add_linklimit(message: types.Message, state: FSMContext):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 1, CONTENT: Access Denied")
         return
     else:
         await message.answer("Введите ID пользователя", reply_markup=cancelkeyboard)
         await state.set_state(AddLinkLimit.userID.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 1, CONTENT: Await ID")
 
 @dp.message_handler(state=AddLinkLimit.userID)
 async def linklimit_user(message: types.Message, state: FSMContext):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 2")
+
     try:
         userIndex = FindUser(message.text)
         await state.update_data(index=userIndex)
         await message.answer("Сколько слотов добавить?", reply_markup=cancelkeyboard)
         await state.set_state(AddLinkLimit.linkNumber.state)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 2, CONTENT: Await Value")
     except Exception as e:
         await message.answer("Пользователь не найден", reply_markup=cancelkeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 2, CONTENT: User Not Found")
 
 
 @dp.message_handler(state=AddLinkLimit.linkNumber)
 async def linklimit_finale(message: types.Message, state: FSMContext):
     data =  await state.get_data()
     userIndex = data['id']
+
+    userID = message.from_user.id
+    Index = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[Index].role}, COMMAND: Add Link Limit, STAGE: 3")
+
     try:
         Users[userIndex].linkLimit += int(message.text)
         await message.answer("Лимит пользователя был увеличен", reply_markup=adminKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 3, CONTENT: Limit Added")
     except Exception as e:
         await message.answer("Ошибка", reply_markup=cancelkeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Add Link Limit, STAGE: 3, CONTENT: Error")
         return
 
 
@@ -662,10 +831,35 @@ async def linklimit_finale(message: types.Message, state: FSMContext):
 async def emergency_stop(message: types.Message):
     userID = message.from_user.id
     userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Emergency Exit, STAGE: 1")
+
     if Users[userIndex].role != "Admin":
         await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Emergency Exit, STAGE: 1, CONTENT: Access Denied")
     else:
+        logger.warning(f"USER: {userID}, EMERGENCY EXIT!")
         sys.exit(1)
+
+
+#########################Get Logs##########################
+@dp.message_handler(lambda message: message.text == "Логи")
+async def get_logs(message: types.Message):
+    userID = message.from_user.id
+    userIndex = FindUser(userID)
+
+    logger.info(f"MESSAGE USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Get Logs, STAGE: 1")
+
+    if Users[userIndex].role != "Admin":
+        await message.answer("Отказано в доступе", reply_markup=startKeyboard)
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Get Logs, STAGE: 1, CONTENT: Access Denied")
+        return
+    else:
+        await message.answer_document(open("BotLogs.txt", 'rb'))
+        logger.info(
+            f"ANSWER USER: {userID}, ROLE: {Users[userIndex].role}, COMMAND: Get Logs, STAGE: 1, CONTENT: Logs Sent")
 
 ########################################################################################################################
 ########################################################Parsing Module##################################################
@@ -691,7 +885,7 @@ with open('users.json', 'r') as f:
     data = json.load(f)
     for proxy in data["Proxies"]:
         proxyList.append(proxy)
-
+logger.info(f"INITIALIZATION... PROXIES LOADED: {len(proxyList)}")
 
 T = 30.0
 C = 1200.0
@@ -699,7 +893,7 @@ C = 1200.0
 
 def main_parsing():
     t = 30.0
-    timer = 0
+    timer = time.time()
     while True:
         if time.time() - timer >= t:
             t = random.uniform(T-5, T+5)
@@ -707,7 +901,9 @@ def main_parsing():
             linkPool = []
             for user in Users:
                 if user.lifetime > 0:
+                    print(time.time())
                     user.lifetime -= time.time()-timer
+                    print(user.lifetime)
                     for link in range(len(user.links)):
                         newlink = True
                         for i in linkPool:
@@ -722,9 +918,12 @@ def main_parsing():
                             linkPool.append(new)
                 else:
                     print("Out of time")
-
+            if linkPool == []:
+                time.sleep(t)
+                continue
             delay = t/len(linkPool)
             timer = time.time()
+            logger.info(f"START PARSING CYCLE, LINKS IN POOL: {len(linkPool)}, DELAY: {delay}")
             for linkfrompool in linkPool:
                 parse = Thread(target=link_betwen, args=(linkfrompool, ))
                 parse.start()
@@ -739,52 +938,53 @@ def link_betwen(linkfrompool):
 
 async def link_parse(linkfrompool):
     global proxyNumber
+    logger.info(f"LINK PARSE HREF: {linkfrompool.href}, USERS: {linkfrompool.users}, LINKIDS: {linkfrompool.usersLinkID}, PROXY: {proxyList[proxyNumber]}")
     try:
-        try:
-            if len(proxyList) == 0:
-                print("out of proxies")
-                return
-
-            edge_options = Options()
-            proxopt = {
-                'proxy': {
-                    'http': f'{proxyList[proxyNumber]}',
-                    'https': f'{proxyList[proxyNumber]}',
-                },
-            }
-            print('Current Proxy', proxyList[proxyNumber])
-            proxyNumber = (proxyNumber + 1) % len(proxyList)
-            # edge_options.add_argument("--headless=new")
-            prefs = {'profile.default_content_setting_values': {'cookies': 2, 'images': 2, 'javascript': 2,
-                                                                'plugins': 2, 'popups': 2, 'geolocation': 2,
-                                                                'notifications': 2, 'auto_select_certificate': 2,
-                                                                'fullscreen': 2,
-                                                                'mouselock': 2, 'mixed_script': 2, 'media_stream': 2,
-                                                                'media_stream_mic': 2, 'media_stream_camera': 2,
-                                                                'protocol_handlers': 2,
-                                                                'ppapi_broker': 2, 'automatic_downloads': 2,
-                                                                'midi_sysex': 2,
-                                                                'push_messaging': 2, 'ssl_cert_decisions': 2,
-                                                                'metro_switch_to_desktop': 2,
-                                                                'protected_media_identifier': 2, 'app_banner': 2,
-                                                                'site_engagement': 2,
-                                                                'durable_storage': 2}}
-            edge_options.add_experimental_option('prefs', prefs)
-            drive = webdriver.Edge(options=edge_options, seleniumwire_options=proxopt)
-            drive.get(linkfrompool.href)
-
-            if "Доступ ограничен: проблема с IP" in drive.page_source:
-                print("Bad proxy")
-                badProxy.append(proxyList[proxyNumber])
-                proxyList.remove(proxyList[proxyNumber])
-                return
-
-        except Exception as e:
-            print("Proxy Error!")
-            badProxy.append(proxyList[proxyNumber])
-            proxyList.remove(proxyList[0])
+        if len(proxyList) == 0:
+            logger.warning(f"OUT OF PROXIES!, HREF: {linkfrompool.href}")
             return
 
+        edge_options = Options()
+        proxopt = {
+            'proxy': {
+                'http': f'{proxyList[proxyNumber]}',
+                'https': f'{proxyList[proxyNumber]}',
+            },
+        }
+        print('Current Proxy', proxyList[proxyNumber])
+        proxyNumber = (proxyNumber + 1) % len(proxyList)
+        # edge_options.add_argument("--headless=new")
+        prefs = {'profile.default_content_setting_values': {'cookies': 2, 'images': 2, 'javascript': 2,
+                                                            'plugins': 2, 'popups': 2, 'geolocation': 2,
+                                                            'notifications': 2, 'auto_select_certificate': 2,
+                                                            'fullscreen': 2,
+                                                            'mouselock': 2, 'mixed_script': 2, 'media_stream': 2,
+                                                            'media_stream_mic': 2, 'media_stream_camera': 2,
+                                                            'protocol_handlers': 2,
+                                                            'ppapi_broker': 2, 'automatic_downloads': 2,
+                                                            'midi_sysex': 2,
+                                                            'push_messaging': 2, 'ssl_cert_decisions': 2,
+                                                            'metro_switch_to_desktop': 2,
+                                                            'protected_media_identifier': 2, 'app_banner': 2,
+                                                            'site_engagement': 2,
+                                                            'durable_storage': 2}}
+        edge_options.add_experimental_option('prefs', prefs)
+        drive = webdriver.Edge(options=edge_options, seleniumwire_options=proxopt)
+        drive.get(linkfrompool.href)
+
+        if "Доступ ограничен: проблема с IP" in drive.page_source:
+            badProxy.append(proxyList[proxyNumber])
+            proxyList.remove(proxyList[proxyNumber])
+            logger.warning(f"BAD PROXY!, HREF: {linkfrompool.href}")
+            return
+
+    except Exception as e:
+        badProxy.append(proxyList[proxyNumber])
+        proxyList.remove(proxyList[0])
+        logger.error(f"PROXY ERROR!, HREF: {linkfrompool.href}")
+        return
+
+    try:
         soup = BeautifulSoup(drive.page_source, "html.parser")
         items = soup.find_all('div', {'data-marker': 'item'})
         links = []
@@ -794,14 +994,14 @@ async def link_parse(linkfrompool):
         lastItem = 40
 
         for link in range(len(links)):
-            if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.id]:
+            if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]]:
                 lastItem = link
                 break
 
         print(lastItem)
-        print(Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.id])
+        print(Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]])
 
-        if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.id] != []:
+        if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != []:
             for i in range(lastItem):
                 fulllink = "https://www.avito.ru" + links[i]
                 price = items[i].find('meta', {'itemprop': 'price'}).get('content')
@@ -815,13 +1015,14 @@ async def link_parse(linkfrompool):
                     asyncio.run_coroutine_threadsafe(bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
                     Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[linkfrompool.usersLinkID[user]]] = links
 
+        logger.info(f"LINK PARSE SUCCESSFULLY,  HREF:{linkfrompool.href}")
     except Exception as e:
-        print("Removal Error")
+        logger.error(f"REMOVAL ERROR!, HREF: {linkfrompool.href}")
 
 
 t1 = Thread(target=TelegramModule)
-# t1.start()
+t1.start()
 t2 = Thread(target=main_parsing)
 t2.start()
-# t1.join()
+t1.join()
 t2.join()
