@@ -43,4 +43,3 @@ t2 = Thread(target=Parser.main_parsing)
 t2.start()
 t1.join()
 t2.join()
-
