@@ -137,44 +137,44 @@ async def link_parse(linkfrompool):
         logger.error(f"PROXY ERROR!, HREF: {linkfrompool.href}")
         return
 
-    # try:
-    soup = BeautifulSoup(drive.page_source, "html.parser")
-    items = soup.find_all('div', {'data-marker': 'item'})
-    links = []
-    for item in items:
-        links.append(item.find('a').get('href'))
+    try:
+        soup = BeautifulSoup(drive.page_source, "html.parser")
+        items = soup.find_all('div', {'data-marker': 'item'})
+        links = []
+        for item in items:
+            links.append(item.find('a').get('href'))
 
-    lastItem = 40
+        lastItem = 40
 
-    for link in range(len(links)):
-        if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]]:
-            lastItem = link
-            break
+        for link in range(len(links)):
+            if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]]:
+                lastItem = link
+                break
 
-    print(lastItem)
-    print(Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]])
+        print(lastItem)
+        print(Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]])
 
-    if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != []:
-        print("Enter1")
-        for i in range(lastItem):
-            print("Enter2")
-            fulllink = "https://www.avito.ru" + links[i]
-            price = items[i].find('meta', {'itemprop': 'price'}).get('content')
-            title = items[i].find('a').get('title')[11:len(items[i].find('a').get('title'))-13]
+        if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != []:
+            print("Enter1")
+            for i in range(lastItem):
+                print("Enter2")
+                fulllink = "https://www.avito.ru" + links[i]
+                price = items[i].find('meta', {'itemprop': 'price'}).get('content')
+                title = items[i].find('a').get('title')[11:len(items[i].find('a').get('title'))-13]
 
-            for user in range(len(linkfrompool.users)):
-                print("Enter3")
-                message = (f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
-                           f"{title}\n\n"
-                           f"Цена: {price} руб\n\n"
-                           f" {fulllink}")
-                print("Enter4")
-                asyncio.run_coroutine_threadsafe(bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
-                print("Enter5")
+                for user in range(len(linkfrompool.users)):
+                    print("Enter3")
+                    message = (f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
+                               f"{title}\n\n"
+                               f"Цена: {price} руб\n\n"
+                               f" {fulllink}")
+                    print("Enter4")
+                    asyncio.run_coroutine_threadsafe(bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
+                    print("Enter5")
 
-    for user in range(len(linkfrompool.users)):
-        Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[user]] = links
+        for user in range(len(linkfrompool.users)):
+            Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[user]] = links
 
-    logger.info(f"LINK PARSE SUCCESSFULLY,  HREF:{linkfrompool.href}")
-    # except Exception as e:
-    #     logger.error(f"REMOVAL ERROR!, HREF: {linkfrompool.href}")
+        logger.info(f"LINK PARSE SUCCESSFULLY,  HREF:{linkfrompool.href}")
+    except Exception as e:
+        logger.error(f"REMOVAL ERROR!, HREF: {linkfrompool.href}")

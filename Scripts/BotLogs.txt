@@ -198,4 +198,3 @@
 2024-02-23 21:36:30,437 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104, USERS: [5155941114, 5155941114, 5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0, 0, 0], PROXY: https://user157440:tvhi7d@80.91.209.208:1227
 2024-02-23 21:36:41,032 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104
 2024-02-23 21:36:48,711 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 14.530447557143415
-2024-02-23 21:36:48,713 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104, USERS: [5155941114, 5155941114, 5155941114, 5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0, 0, 0, 0], PROXY: https://user157440:tvhi7d@146.19.137.142:1227

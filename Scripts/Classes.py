@@ -6,7 +6,7 @@ import random
 proxyList = []
 badProxy = []
 
-T = 15.0
+T = 30.0
 C = 1200.0
 
 
