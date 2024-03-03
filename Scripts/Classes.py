@@ -6,7 +6,7 @@ import random
 proxyList = []
 badProxy = []
 
-T = 30.0
+T = 60.0
 C = 1200.0
 
 
@@ -91,6 +91,7 @@ def FindUser(ID):
 
 class Link:
     href = ''
+    link_type = ""
     users = []
     usersLinkID = []
 

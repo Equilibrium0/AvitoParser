@@ -197,4 +197,151 @@
 2024-02-23 21:36:30,434 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 18.27484592948388
 2024-02-23 21:36:30,437 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104, USERS: [5155941114, 5155941114, 5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0, 0, 0], PROXY: https://user157440:tvhi7d@80.91.209.208:1227
 2024-02-23 21:36:41,032 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104
-2024-02-23 21:36:48,711 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 14.530447557143415
+2024-02-23 21:36:48,711 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 14.5304475571434152024-02-24 22:07:53,331 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-24 22:07:53,332 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-24 22:08:07,947 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1
+2024-02-24 22:08:08,168 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1, CONTENT: Status Shown
+2024-02-24 22:08:23,337 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 34.49965292933195
+2024-02-24 22:08:23,339 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-24 22:08:38,971 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104
+2024-02-24 22:08:57,839 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 30.2046768501138
+2024-02-24 22:08:57,841 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-24 22:09:09,116 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?s=104
+2024-02-25 22:59:54,694 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-25 22:59:54,695 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-25 23:00:04,081 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: Delete Link, STAGE: 1
+2024-02-25 23:00:04,248 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: Delete Link, STAGE: 1, CONTENT: Await Link Index
+2024-02-25 23:00:05,802 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: Delete Link, STAGE: 2
+2024-02-25 23:00:06,259 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: Delete Link, STAGE: 2, CONTENT: Link Deleted
+2024-02-25 23:00:09,608 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: New Link, STAGE: 1
+2024-02-25 23:00:09,809 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: New Link, STAGE: 1, CONTENT: Await link
+2024-02-25 23:00:14,627 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: New Link, STAGE: 2
+2024-02-25 23:00:14,833 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: New Link, STAGE: 2, CONTENT: Await name
+2024-02-25 23:00:22,908 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: New Link, STAGE: 3
+2024-02-25 23:00:23,064 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: New Link, STAGE: 3, CONTENT: Link Added
+2024-02-25 23:00:24,700 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 28.27464638420754
+2024-02-25 23:00:24,702 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-25 23:00:52,976 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 27.221575059253883
+2024-02-25 23:00:52,978 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-25 23:01:20,199 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 28.17288230165333
+2024-02-25 23:01:20,201 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0], PROXY: https://user157440:tvhi7d@212.116.242.112:1227
+2024-02-25 23:01:31,772 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1
+2024-02-25 23:01:31,921 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1, CONTENT: Status Shown
+2024-02-25 23:01:48,374 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 29.512264165001962
+2024-02-25 23:01:48,376 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0, 0], PROXY: https://user157440:tvhi7d@212.116.242.213:1227
+2024-02-25 23:03:08,005 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-25 23:03:08,005 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-25 23:03:38,009 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 29.81247774998436
+2024-02-25 23:03:38,011 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-25 23:06:33,024 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-25 23:06:33,025 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-25 23:07:03,031 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 29.392054390997217
+2024-02-25 23:07:03,033 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-25 23:09:10,686 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-25 23:09:10,686 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-25 23:09:40,689 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 29.394438303906476
+2024-02-25 23:09:40,691 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-25 23:11:51,571 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-25 23:11:51,572 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-25 23:12:21,574 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 33.66132069613421
+2024-02-25 23:12:21,575 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-25 23:14:11,510 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-25 23:14:11,511 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-25 23:14:41,514 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 32.96148231453103
+2024-02-25 23:14:41,516 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:05:16,100 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:05:16,102 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:05:46,106 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 26.580292120418783
+2024-02-26 19:05:46,108 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:06:12,695 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 25.985538480735705
+2024-02-26 19:06:12,711 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-26 19:06:30,194 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:06:30,194 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:06:58,110 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1
+2024-02-26 19:06:58,313 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1, CONTENT: Status Shown
+2024-02-26 19:07:00,198 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 26.24538191091354
+2024-02-26 19:07:00,199 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:07:26,445 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 34.88987201088089
+2024-02-26 19:07:26,447 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-26 19:12:28,415 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:12:28,416 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:12:58,420 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 32.6107485669366
+2024-02-26 19:12:58,422 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:13:23,782 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-02-26 19:14:28,075 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:14:28,077 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:14:28,081 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 33.26214659311445
+2024-02-26 19:14:28,086 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:14:51,811 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-02-26 19:15:14,462 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:15:14,463 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:15:14,466 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 31.938574894768376
+2024-02-26 19:15:14,469 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:15:37,925 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-02-26 19:16:02,846 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:16:02,847 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:16:02,850 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 26.59679396540042
+2024-02-26 19:16:02,853 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:16:29,469 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 25.050032572706744
+2024-02-26 19:16:29,554 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-26 19:16:38,745 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-02-26 19:17:11,129 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:17:11,129 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:17:11,133 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 32.475084351903405
+2024-02-26 19:17:11,137 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:17:36,672 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-02-26 19:17:52,105 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:17:52,106 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:17:52,109 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 25.805349651385942
+2024-02-26 19:17:52,112 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:18:17,918 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 25.409165089847562
+2024-02-26 19:18:17,927 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-26 19:18:29,792 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:18:29,793 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:18:29,796 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 27.245847087958758
+2024-02-26 19:18:29,799 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:18:57,045 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 32.2234590687043
+2024-02-26 19:18:57,049 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-26 19:19:27,774 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:19:27,774 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:19:27,777 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 26.658871280491695
+2024-02-26 19:19:27,780 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:20:10,733 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:20:10,733 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:20:10,736 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 31.63349328754171
+2024-02-26 19:20:10,740 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:20:42,706 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:20:42,706 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:20:42,710 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 32.13319210930128
+2024-02-26 19:20:42,712 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:21:06,251 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-02-26 19:21:23,782 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:21:23,782 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:21:23,786 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 29.013462233161917
+2024-02-26 19:21:23,790 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:22:20,581 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-02-26 19:22:20,582 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-02-26 19:22:20,585 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 26.712869003597064
+2024-02-26 19:22:20,589 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-02-26 19:22:47,300 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 29.669403464108413
+2024-02-26 19:22:47,302 Parser INFO  LINK PARSE HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-02-26 19:22:51,818 Parser ERROR  PROXY ERROR!, HREF: https://youla.ru/moskovskaya_oblast_krasnogorsk/kompyutery/komplektuyushchie?attributes[sort_field]=date_published
+2024-03-03 16:27:29,609 __main__ INFO  INITIALIZATION... USER LOADED: 1
+2024-03-03 16:27:29,610 __main__ INFO  INITIALIZATION... PROXIES LOADED: 8
+2024-03-03 16:27:29,632 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 59.960439634459156
+2024-03-03 16:27:29,636 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104, USERS: [5155941114], LINKIDS: [0], PROXY: https://user157440:tvhi7d@195.64.127.194:4099
+2024-03-03 16:27:36,032 Telegram INFO  MESSAGE USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1
+2024-03-03 16:27:36,150 Telegram INFO  ANSWER USER: 5155941114, ROLE: Admin, COMMAND: System Status, STAGE: 1, CONTENT: Status Shown
+2024-03-03 16:27:55,583 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104
+2024-03-03 16:28:29,596 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 55.05184784995867
+2024-03-03 16:28:29,597 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104, USERS: [5155941114, 5155941114], LINKIDS: [0, 0], PROXY: https://user157440:tvhi7d@195.64.127.226:4099
+2024-03-03 16:28:40,952 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104
+2024-03-03 16:29:24,649 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 63.329684891776786
+2024-03-03 16:29:24,651 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104, USERS: [5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0], PROXY: https://user157440:tvhi7d@212.116.242.112:1227
+2024-03-03 16:29:35,801 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104
+2024-03-03 16:29:38,162 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva/tovary_dlya_kompyutera/videokarta_gtx_1660_ti_6gb_3636813091?slocation=107620, USERS: [5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0], PROXY: https://user157440:tvhi7d@212.116.242.213:1227
+2024-03-03 16:29:52,248 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva/tovary_dlya_kompyutera/videokarta_rx6700xt_hellhound_3721401099?slocation=107620, USERS: [5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0], PROXY: https://user157440:tvhi7d@80.91.209.208:1227
+2024-03-03 16:30:05,921 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva/tovary_dlya_kompyutera/videokarta_dlya_noutbuka_lenovo_y510p_3414576871?slocation=107620, USERS: [5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0], PROXY: https://user157440:tvhi7d@146.19.137.142:1227
+2024-03-03 16:30:27,981 Parser INFO  START PARSING CYCLE, LINKS IN POOL: 1, DELAY: 64.44253830797447
+2024-03-03 16:30:27,985 Parser INFO  LINK PARSE HREF: https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104, USERS: [5155941114, 5155941114, 5155941114, 5155941114], LINKIDS: [0, 0, 0, 0], PROXY: https://user157440:tvhi7d@212.116.242.144:1227
+2024-03-03 16:30:41,483 Parser INFO  LINK PARSE SUCCESSFULLY,  HREF:https://www.avito.ru/moskva_i_mo/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?cd=1&s=104

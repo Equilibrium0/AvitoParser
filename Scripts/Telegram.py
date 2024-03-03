@@ -180,7 +180,8 @@ async def link_name(message: types.Message, state: FSMContext):
 
     if (("https://www.avito.ru/" not in message.text) and
             ("https://avito.ru/" not in message.text) and
-            ("https://m.avito.ru/" not in message.text)):
+            ("https://m.avito.ru/" not in message.text) and
+            ("https://youla.ru/" not in message.text)):
         await message.answer("Это не ссылка на Авито\nВведите корректную ссылку", reply_markup=cancelkeyboard)
         logger.info(f"ANSWER USER: {userID}, ROLE: {Users[index].role}, COMMAND: New Link, STAGE: 2, CONTENT: Bad link")
 
