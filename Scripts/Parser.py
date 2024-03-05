@@ -14,6 +14,8 @@ from seleniumwire import webdriver
 
 from Classes import proxyList, badProxy
 from Telegram import bot, teleloop
+from DataBase import write_to_base, get_price_from_base
+
 proxyNumber = 0
 
 logger = logging.getLogger(__name__)
@@ -194,14 +196,28 @@ async def data_vacuum(href):
     vacuum_link.link_type = "vacuum"
     await link_parse(vacuum_link)
 
-async def to_data_base(link, html_code):
-    try:
-        soup = BeautifulSoup(html_code, 'html.parser')
-        test = soup.find_all('span', {'itemprop': 'itemListElement'})
-        print(test)
 
-    except:
-        print('ERROR')
+async def to_data_base(html_code):
+    soup = BeautifulSoup(html_code, 'html.parser')
+    tables = soup.find_all('span', {'itemprop': 'itemListElement'})
+    price = soup.find('span', {'itemprop': 'price'}).get('content')
+    table = tables[4].find('a').get('title')
+    spec = soup.find('div', {'data-marker': 'item-view/item-params'})
+    spec = spec.find_all('li')
+    fields = []
+    values = []
+    for i in spec:
+        fields.append(i.text[0:i.text.find(':')])
+        values.append(i.text[i.text.find(':')+2:len(i.text)])
+    write_to_base(table, price, fields, values)
+
+
+async def get_price(table, fields, values):
+    prices = get_price_from_base(table, fields, values)
+    av_price = 0
+    for price in prices:
+        av_price += price
+    av_price = av_price/len(prices)
 
 async def youla_parsing(linkfrompool, html_code):
     try:
