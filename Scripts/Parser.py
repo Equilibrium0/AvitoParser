@@ -51,14 +51,10 @@ def main_parsing():
     while True:
         if time.time() - timer >= t:
             t = random.uniform(T-5, T+5)
-            print(f"t = {t}")
             linkPool = []
-            print("linkpool ", linkPool)
             for user in Users:
                 if user.lifetime > 0:
-                    print(time.time())
                     user.lifetime -= time.time()-timer
-                    print(user.lifetime)
                     for link in range(len(user.links)):
                         newlink = True
                         for i in linkPool:
@@ -96,6 +92,8 @@ def link_betwen(linkfrompool):
 
 
 async def link_parse(linkfrompool):
+    print("start parsing")
+    print(linkfrompool.href)
     global proxyNumber
     logger.info(f"LINK PARSE HREF: {linkfrompool.href}, USERS: {linkfrompool.users}, LINKIDS: {linkfrompool.usersLinkID}, PROXY: {proxyList[proxyNumber]}")
     try:
@@ -130,26 +128,29 @@ async def link_parse(linkfrompool):
         edge_options.add_experimental_option('prefs', prefs)
         drive = webdriver.Edge(options=edge_options, seleniumwire_options=proxopt)
         drive.get(linkfrompool.href)
+        print("link type: ", linkfrompool.link_type)
 
         if "Доступ ограничен: проблема с IP" in drive.page_source:
             badProxy.append(proxyList[proxyNumber])
             proxyList.remove(proxyList[proxyNumber])
             logger.warning(f"BAD PROXY!, HREF: {linkfrompool.href}")
             return
-
+        print("Enter 5")
         match linkfrompool.link_type:
-            case "vacuum": await to_data_base(linkfrompool, drive.page_source)
+            case "detailed_avito": await detailed_link(linkfrompool, drive.page_source)
             case "avito": await avito_parse(linkfrompool, drive.page_source)
-            case "youla": await youla_parsing(linkfrompool, drive.page_source)
+            # case "youla": await youla_parsing(linkfrompool, drive.page_source)
 
     except Exception as e:
         badProxy.append(proxyList[proxyNumber])
         proxyList.remove(proxyList[0])
+        print(e)
         logger.error(f"PROXY ERROR!, HREF: {linkfrompool.href}")
         return
 
 
 async def avito_parse(linkfrompool, html_code):
+    print("avito parse")
     try:
         soup = BeautifulSoup(html_code, "html.parser")
         items = soup.find_all('div', {'data-marker': 'item'})
@@ -167,21 +168,22 @@ async def avito_parse(linkfrompool, html_code):
         if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != []:
             for i in range(lastItem):
                 fulllink = "https://www.avito.ru" + links[i]
+                detailed_thread = Thread(target=pre_data_vacuum, args=(linkfrompool, fulllink, ))
+                detailed_thread.start()
 
-                asyncio.create_task(data_vacuum(fulllink))
+                # asyncio.create_task(data_vacuum(fulllink))
 
-                price = items[i].find('meta', {'itemprop': 'price'}).get('content')
-                title = items[i].find('a').get('title')[11:len(items[i].find('a').get('title')) - 13]
-
-                for user in range(len(linkfrompool.users)):
-                    message = (
-                        f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
-                        f"{title}\n\n"
-                        f"Цена: {price} руб\n\n"
-                        f" {fulllink}")
-                    asyncio.run_coroutine_threadsafe(
-                        bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
-
+                # price = items[i].find('meta', {'itemprop': 'price'}).get('content')
+                # title = items[i].find('a').get('title')[11:len(items[i].find('a').get('title')) - 13]
+                #
+                # for user in range(len(linkfrompool.users)):
+                #     message = (
+                #         f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
+                #         f"{title}\n\n"
+                #         f"Цена: {price} руб\n\n"
+                #         f" {fulllink}")
+                #     asyncio.run_coroutine_threadsafe(
+                #         bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
 
         for user in range(len(linkfrompool.users)):
             Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[user]] = links
@@ -191,17 +193,27 @@ async def avito_parse(linkfrompool, html_code):
         logger.error(f"REMOVAL ERROR!, HREF: {linkfrompool.href}")
 
 
-async def data_vacuum(href):
-    vacuum_link = Link(href)
-    vacuum_link.link_type = "vacuum"
-    await link_parse(vacuum_link)
+def pre_data_vacuum(linkfrompool, new_href):
+    newloop = asyncio.new_event_loop()
+    asyncio.set_event_loop(newloop)
+    asyncio.run(data_vacuum(linkfrompool, new_href))
 
 
-async def to_data_base(html_code):
+async def data_vacuum(linkfrompool, new_href):
+    print("data vacuum")
+    linkfrompool.href = new_href
+    linkfrompool.link_type = "detailed_avito"
+    await link_parse(linkfrompool)
+
+
+async def detailed_link(linkfrompool, html_code):
+    print("detailed link")
+    print("href: ", linkfrompool.href)
     soup = BeautifulSoup(html_code, 'html.parser')
     tables = soup.find_all('span', {'itemprop': 'itemListElement'})
     price = soup.find('span', {'itemprop': 'price'}).get('content')
     table = tables[4].find('a').get('title')
+    name = soup.find('h1', {'itemprop': 'name'}).text
     spec = soup.find('div', {'data-marker': 'item-view/item-params'})
     spec = spec.find_all('li')
     fields = []
@@ -209,7 +221,18 @@ async def to_data_base(html_code):
     for i in spec:
         fields.append(i.text[0:i.text.find(':')])
         values.append(i.text[i.text.find(':')+2:len(i.text)])
-    write_to_base(table, price, fields, values)
+
+    write_to_base(table, name, price, fields, values)
+
+    for user in range(len(linkfrompool.users)):
+        message = (
+            f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
+            f"{name}\n\n"
+            f"Цена: {price} руб\n\n"
+            f"Средняя цена аналогичного товара: {get_price(table, fields, values)} руб\n\n"
+            f" {linkfrompool.href}")
+        asyncio.run_coroutine_threadsafe(
+            bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
 
 
 async def get_price(table, fields, values):
@@ -218,56 +241,61 @@ async def get_price(table, fields, values):
     for price in prices:
         av_price += price
     av_price = av_price/len(prices)
+    if av_price == 0:
+        return "Нет данных"
+    return av_price
 
-async def youla_parsing(linkfrompool, html_code):
-    try:
-        print("Enter0")
-        soup = BeautifulSoup(html_code, "html.parser")
-        items = soup.find_all('div', {'data-test-component':'ProductOrAdCard'})
 
-        for item in items:
-            try:
-                item.find("a").get('title')
-                item.find("span", {"data-test-component" : "Price"})
-            except:
-                items.remove(item)
 
-        links = []
-
-        for item in items:
-            links.append(item.find("a").get('href'))
-
-        lastItem = 40
-
-        for link in range(len(links)):
-            if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]]:
-                lastItem = link
-                break
-
-        if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != [] or True:
-            print("Enter1")
-            for i in range(lastItem):
-                print("Enter2")
-                fulllink = "https://www.youla.ru" + links[i]
-                price = items[i].find('span', {'data-test-component":"Price'}).text[0:len(items[i].find('span', {"data-test-component":"Price"}).text)- 6]
-                title = items[i].find('a').get('title')
-
-                for user in range(len(linkfrompool.users)):
-                    print("Enter3")
-                    message = (
-                        f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
-                        f"{title}\n\n"
-                        f"Цена: {price} руб\n\n"
-                        f" {fulllink}")
-                    print("Enter4")
-                    asyncio.run_coroutine_threadsafe(
-                        bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
-                    print("Enter5")
-
-        for user in range(len(linkfrompool.users)):
-            Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[user]] = links
-
-        logger.info(f"LINK PARSE SUCCESSFULLY,  HREF:{linkfrompool.href}")
-
-    except Exception as e:
-        print(e)
+# async def youla_parsing(linkfrompool, html_code):
+#     try:
+#         print("Enter0")
+#         soup = BeautifulSoup(html_code, "html.parser")
+#         items = soup.find_all('div', {'data-test-component':'ProductOrAdCard'})
+#
+#         for item in items:
+#             try:
+#                 item.find("a").get('title')
+#                 item.find("span", {"data-test-component" : "Price"})
+#             except:
+#                 items.remove(item)
+#
+#         links = []
+#
+#         for item in items:
+#             links.append(item.find("a").get('href'))
+#
+#         lastItem = 40
+#
+#         for link in range(len(links)):
+#             if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]]:
+#                 lastItem = link
+#                 break
+#
+#         if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != [] or True:
+#             print("Enter1")
+#             for i in range(lastItem):
+#                 print("Enter2")
+#                 fulllink = "https://www.youla.ru" + links[i]
+#                 price = items[i].find('span', {'data-test-component":"Price'}).text[0:len(items[i].find('span', {"data-test-component":"Price"}).text)- 6]
+#                 title = items[i].find('a').get('title')
+#
+#                 for user in range(len(linkfrompool.users)):
+#                     print("Enter3")
+#                     message = (
+#                         f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
+#                         f"{title}\n\n"
+#                         f"Цена: {price} руб\n\n"
+#                         f" {fulllink}")
+#                     print("Enter4")
+#                     asyncio.run_coroutine_threadsafe(
+#                         bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
+#                     print("Enter5")
+#
+#         for user in range(len(linkfrompool.users)):
+#             Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[user]] = links
+#
+#         logger.info(f"LINK PARSE SUCCESSFULLY,  HREF:{linkfrompool.href}")
+#
+#     except Exception as e:
+#         print(e)

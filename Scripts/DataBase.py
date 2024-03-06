@@ -25,14 +25,14 @@ values = ["1", "2", "3"]
 price = 120000
 
 
-def write_to_base(table, price, fields, values):
+def write_to_base(table, name, price, fields, values):
     fieldline = ''
     field = ""
     value = ""
     for item in fields:
         fieldline += item + " VARCHAR, "
         field += item + ", "
-    fieldline += "price INTEGER"
+    fieldline += "price INTEGER, name VARCHAR"
     field += "price"
     for item in values:
         value += "'" + item + "'" + ", "
@@ -53,10 +53,10 @@ def write_to_base(table, price, fields, values):
                     if j not in columns:
                         print("new column")
                         curs.execute(f"ALTER TABLE {table} ADD {i} VARCHAR")
-                line = f"INSERT INTO {table} ({field}) VALUES ({value}, {price})"
+                line = f"INSERT INTO {table} ({field}) VALUES ({value}, {price}, {name})"
                 print(line)
                 print("Enter 0")
-                curs.execute(f"INSERT INTO {table} ({field}) VALUES ({value}, {price})")
+                curs.execute(f"INSERT INTO {table} ({field}) VALUES ({value}, {price}, {name})")
                 conn.commit()
 
         except Exception as e:
@@ -77,5 +77,3 @@ def get_price_from_base(table, fields, values):
     for i in range(len(prices)):
         prices[i] = prices[i][0]
     print(prices)
-
-get_price_from_base(table, fields, values)
