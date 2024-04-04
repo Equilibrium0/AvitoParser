@@ -1,5 +1,4 @@
 from Classes import Users, FindUser, Link, T, C
-from Telegram import send_to_user
 
 import time
 import logging
@@ -93,7 +92,7 @@ def link_betwen(linkfrompool):
 
 async def link_parse(linkfrompool):
     print("start parsing")
-    print(linkfrompool.href)
+    print("Link: ", linkfrompool.href)
     global proxyNumber
     logger.info(f"LINK PARSE HREF: {linkfrompool.href}, USERS: {linkfrompool.users}, LINKIDS: {linkfrompool.usersLinkID}, PROXY: {proxyList[proxyNumber]}")
     try:
@@ -107,6 +106,7 @@ async def link_parse(linkfrompool):
                 'http': f'{proxyList[proxyNumber]}',
                 'https': f'{proxyList[proxyNumber]}',
             },
+            'connection_timeout': None,
         }
         print('Current Proxy', proxyList[proxyNumber])
         proxyNumber = (proxyNumber + 1) % len(proxyList)
@@ -127,6 +127,7 @@ async def link_parse(linkfrompool):
                                                             'durable_storage': 2}}
         edge_options.add_experimental_option('prefs', prefs)
         drive = webdriver.Edge(options=edge_options, seleniumwire_options=proxopt)
+        # drive = webdriver.Edge(options=edge_options)
         drive.get(linkfrompool.href)
         print("link type: ", linkfrompool.link_type)
 
@@ -160,10 +161,13 @@ async def avito_parse(linkfrompool, html_code):
 
         lastItem = 40
 
+
         for link in range(len(links)):
             if links[link] in Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]]:
                 lastItem = link
                 break
+
+        print("New Items: ", lastItem)
 
         if Users[FindUser(linkfrompool.users[0])].lastParse[linkfrompool.usersLinkID[0]] != []:
             for i in range(lastItem):
@@ -171,24 +175,11 @@ async def avito_parse(linkfrompool, html_code):
                 detailed_thread = Thread(target=pre_data_vacuum, args=(linkfrompool, fulllink, ))
                 detailed_thread.start()
 
-                # asyncio.create_task(data_vacuum(fulllink))
-
-                # price = items[i].find('meta', {'itemprop': 'price'}).get('content')
-                # title = items[i].find('a').get('title')[11:len(items[i].find('a').get('title')) - 13]
-                #
-                # for user in range(len(linkfrompool.users)):
-                #     message = (
-                #         f"Новое объявление по запросу {Users[FindUser(linkfrompool.users[user])].linksNames[linkfrompool.usersLinkID[user]]}\n\n"
-                #         f"{title}\n\n"
-                #         f"Цена: {price} руб\n\n"
-                #         f" {fulllink}")
-                #     asyncio.run_coroutine_threadsafe(
-                #         bot.send_message(chat_id=Users[FindUser(linkfrompool.users[user])].ID, text=message), teleloop)
-
         for user in range(len(linkfrompool.users)):
             Users[FindUser(linkfrompool.users[user])].lastParse[linkfrompool.usersLinkID[user]] = links
 
         logger.info(f"LINK PARSE SUCCESSFULLY,  HREF:{linkfrompool.href}")
+
     except Exception as e:
         logger.error(f"REMOVAL ERROR!, HREF: {linkfrompool.href}")
 
